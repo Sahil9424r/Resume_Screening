@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Classification</title>
+    <style>
+        /* General page styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+            font-size: 36px;
+        }
+
+        p {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 10px;
+            color: #555;
+        }
+
+        /* Form styling */
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            margin-top: 20px;
+        }
+
+        label {
+            font-size: 16px;
+            color: #333;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Result box styling */
+        #result {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e9f7e6;
+            border-radius: 4px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        /* Responsive design for mobile */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            h1 {
+                font-size: 28px;
+            }
+            form {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Resume Category Prediction</h1>
+    <p>Upload a resume file (TXT or PDF) to predict its category.</p>
+
+    <!-- Form for file upload -->
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="file">Choose a .txt or .pdf file:</label><br><br>
+        <input type="file" id="file" name="file" accept=".txt, .pdf" required><br><br>
+        <button type="submit">Upload and Predict</button>
+    </form>
+
+    <br><br>
+    <!-- Display the result -->
+    <div id="result"></div>
+
+    <script>
+        // JavaScript for handling the form submission and displaying results
+        document.getElementById("uploadForm").addEventListener("submit", async function(event) {
+            event.preventDefault();  // Prevent the form from submitting traditionally
+
+            const formData = new FormData();
+            formData.append("file", document.getElementById("file").files[0]);
+
+            try {
+                const response = await fetch("/predict", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                // Update the result div with the prediction
+                if (result.category) {
+                    document.getElementById("result").innerHTML = `<strong>Predicted Category:</strong> ${result.category}`;
+                } else {
+                    document.getElementById("result").innerHTML = `<strong>Error:</strong> ${result.error}`;
+                }
+            } catch (error) {
+                document.getElementById("result").innerHTML = `<strong>Error:</strong> Failed to get prediction.`;
+            }
+        });
+    </script>
+</body>
+</html>
